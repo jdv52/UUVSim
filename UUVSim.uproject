@@ -7,9 +7,16 @@
 		{
 			"Name": "UUVSim",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AirSim"
+			]
 		}
 	],
+	"TargetPlatforms": [
+      		"MacNoEditor",
+        	"WindowsNoEditor"
+    	],
 	"Plugins": [
 		{
 			"Name": "ModelingToolsEditorMode",
@@ -29,6 +36,10 @@
 				"Android",
 				"IOS"
 			]
+		},
+		{
+			"Name": "AirSim",
+			"Enabled": true
 		}
 	]
 }
