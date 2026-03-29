@@ -9,14 +9,12 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"AirSim"
+				"AirSim",
+				"Engine",
+				"CoreUObject"
 			]
 		}
 	],
-	"TargetPlatforms": [
-      		"MacNoEditor",
-        	"WindowsNoEditor"
-    	],
 	"Plugins": [
 		{
 			"Name": "ModelingToolsEditorMode",
@@ -41,5 +39,10 @@
 			"Name": "AirSim",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"MacNoEditor",
+		"WindowsNoEditor",
+		"HoloLens"
 	]
 }

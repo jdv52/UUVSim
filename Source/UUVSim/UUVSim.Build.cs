@@ -8,7 +8,7 @@ public class UUVSim : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AirSim", "CesiumRuntime" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
