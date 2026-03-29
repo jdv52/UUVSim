@@ -26,5 +26,15 @@ void UCesiumSunSkyProvider::initialize()
 
 void UCesiumSunSkyProvider::setTimeOfDay(uint64_t tod)
 {
+    if (sun_sky_) {
+        FDateTime date_time = FDateTime::FromUnixTimestamp(tod);
 
+        double solar_time = date_time.GetHour() + (date_time.GetMinute() / 60.0f) + (date_time.GetSecond() / 3600.0f);
+
+        sun_sky_->SolarTime = solar_time;
+        sun_sky_->Day = date_time.GetDay();
+        sun_sky_->Month = date_time.GetMonth();
+        sun_sky_->Year = date_time.GetYear();
+        sun_sky_->UpdateSun();
+    }
 }
