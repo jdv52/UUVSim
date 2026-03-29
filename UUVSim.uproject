@@ -38,6 +38,10 @@
 		{
 			"Name": "AirSim",
 			"Enabled": true
+		},
+		{
+			"Name": "WaterExtras",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
