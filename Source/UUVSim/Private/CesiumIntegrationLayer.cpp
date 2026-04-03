@@ -37,16 +37,7 @@ void UCesiumIntegrationLayer::OnActorSpawned(AActor* actor)
     if (!actor)
         return;
 
-    if (actor->IsA(ARovPawn::StaticClass())) {
-        // do nothing
-
-        // UE_LOG(LogTemp, Warning, TEXT("CesiumIntegrationLayer: Actor spawned: %s"), *actor->GetName());
-
-		// auto rov_pawn = Cast<ARovPawn>(actor);
-
-		// RovPawnSpawnHook(rov_pawn);
-    }
-    else if (actor->IsA(ASimModeBase::StaticClass())) {
+    if (actor->IsA(ASimModeBase::StaticClass())) {
         UE_LOG(LogTemp, Warning, TEXT("CesiumIntegrationLayer: Setting SimModeBase sun sky provider"));
 
         ASimModeBase* sim_mode = Cast<ASimModeBase>(actor);
@@ -68,40 +59,6 @@ void UCesiumIntegrationLayer::OnWorldPostInitialization(UWorld* World, const UWo
     }
 }
 
-void UCesiumIntegrationLayer::RovPawnSpawnHook(ARovPawn* rov_pawn, ASimModeBase* owner)
-{
-    TArray<UCesiumGlobeAnchorComponent*> globe_anchor_components;
-    rov_pawn->GetComponents<UCesiumGlobeAnchorComponent>(globe_anchor_components);
-
-    if (globe_anchor_components.Num() == 0) {
-        UE_LOG(LogTemp, Warning, TEXT("CesiumIntegrationLayer: Adding CesiumGlobeAnchorComponent to %s"), *rov_pawn->GetName());
-
-        auto globe_anchor_component = NewObject<UCesiumGlobeAnchorComponent>(rov_pawn);
-
-        if (globe_anchor_component)
-        {
-            globe_anchor_component->RegisterComponent();
-            rov_pawn->AddInstanceComponent(globe_anchor_component);
-
-            TArray<AActor*> georeferences;
-            UGameplayStatics::GetAllActorsOfClass(rov_pawn->GetWorld(), ACesiumSunSky::StaticClass(), georeferences);
-
-            if (georeferences.Num() > 0) {
-                auto georeference = Cast<ACesiumGeoreference>(georeferences[0]);
-                globe_anchor_component->SetGeoreference(georeference);
-            }
-
-            globe_anchor_component->MoveToLongitudeLatitudeHeight(
-                FVector(
-                    owner->getSettings().origin_geopoint.home_geo_point.latitude,
-                    owner->getSettings().origin_geopoint.home_geo_point.longitude,
-                    owner->getSettings().origin_geopoint.home_geo_point.altitude
-                )
-            );
-        }
-    }
-}
-
 void UCesiumIntegrationLayer::SimModeBaseSpawnHook(ASimModeBase* sim_mode_base)
 {
     auto sun_sky_provider = NewObject<UCesiumSunSkyProvider>(sim_mode_base);
@@ -112,11 +69,25 @@ void UCesiumIntegrationLayer::SimModeBaseSpawnHook(ASimModeBase* sim_mode_base)
 	TArray<AActor*> vehicle_pawns;
     sim_mode_base->getExistingVehiclePawns(vehicle_pawns);
 
-    for (auto pawn : vehicle_pawns)
-    {
-        if (pawn->IsA(ARovPawn::StaticClass())) {
-			auto rov_pawn = Cast<ARovPawn>(pawn);
-			RovPawnSpawnHook(rov_pawn, sim_mode_base);
-        }
+    TArray<AActor*> georeferences;
+    UGameplayStatics::GetAllActorsOfClass(sim_mode_base->GetWorld(), ACesiumGeoreference::StaticClass(), georeferences);
+
+    if (georeferences.Num() > 0) {
+        auto georeference = Cast<ACesiumGeoreference>(georeferences[0]);
+
+		auto origin_geopoint = sim_mode_base->getSettings().origin_geopoint.home_geo_point;
+
+		FVector origin_location = FVector(
+			origin_geopoint.longitude,
+			origin_geopoint.latitude,
+			origin_geopoint.altitude
+		);
+
+
+        UE_LOG(LogTemp, Warning, TEXT("CesiumIntegrationLayer: Setting georeference origin to %s"), *origin_location.ToString());
+
+        georeference->SetOriginLongitudeLatitudeHeight(
+            origin_location
+        );
     }
 }
